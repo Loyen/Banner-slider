@@ -1,0 +1,29 @@
+body 
+{ 
+  background: #333; 
+  color: #DDD; 
+  font-family: sans-serif;
+
+  margin-bottom: 48px; 
+  margin-top: 48px; 
+  text-align: center;
+}
+
+
+.slider
+{
+  height: 480px;
+  margin: 0 auto;
+  position: relative;
+  width: 960px;
+
+  background: #aaa;
+}
+
+.slider .slide
+{
+  display: none;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
