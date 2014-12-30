@@ -111,7 +111,8 @@
         lastSlide = slides[lastSlideID],
         currentSlideID = data.currentSlide,
         currentSlide = slides[currentSlideID],
-        transition = options.animation.transition;
+        transition = options.animation.transition,
+        easing = options.animation.easing;
 
       if (!slides[slideID]) {
         console.log('Slide '+slideID+' do not exist.');
@@ -128,6 +129,7 @@
         currentSlide.style.zIndex = 1;
 
         if (currentSlide.getAttribute('slider-transition')) transition = currentSlide.getAttribute('slider-transition');
+        if (currentSlide.getAttribute('slider-easing')) easing = currentSlide.getAttribute('slider-easing');
 
         if (lastSlide) lastSlide.style.zIndex = 0;
 
@@ -135,9 +137,9 @@
         if (!noAnimation) {
           self.stop(); 
 
-          var transitionEffect = self.transition(transition);
+          var runTransition = self.transition(transition, easing);
 
-          transitionEffect();
+          runTransition();
 
           self.start();
         }
