@@ -24,6 +24,7 @@
     slider.prototype.data = {
       currentSlide: null,
       lastSlide: null,
+      slider: null,
       slides: [],
       animation: { run: null }
     };
@@ -204,28 +205,48 @@
           self.animate(currentSlide, {opacity: 1});
         },
         slideInTop: function(){
-          currentSlide.style.bottom = sliderWidth+'px';
-          var offsetTop = currentSlide.offsetTop;
+          currentSlide.style.bottom = sliderHeight+'px';
 
           self.animate(currentSlide, {bottom: 0});
         },
         slideInRight: function(){
           currentSlide.style.left = sliderWidth+'px';
-          var offsetLeft = currentSlide.offsetLeft;
 
           self.animate(currentSlide, {left: 0});
         },
         slideInBottom: function(){
-          currentSlide.style.top = sliderWidth+'px';
-          var offsetTop = currentSlide.offsetTop;
+          currentSlide.style.top = sliderHeight+'px';
 
           self.animate(currentSlide, {top: 0});
         },
         slideInLeft: function(){
           currentSlide.style.right = sliderWidth+'px';
-          var offsetLeft = currentSlide.offsetLeft;
 
           self.animate(currentSlide, {right: 0});
+        },
+        slideInTopLeft: function(){
+          currentSlide.style.bottom = sliderHeight+'px';
+          currentSlide.style.right = sliderWidth+'px';
+
+          self.animate(currentSlide, {bottom: 0, right: 0});
+        },
+        slideInTopRight: function(){
+          currentSlide.style.bottom = sliderHeight+'px';
+          currentSlide.style.left = sliderWidth+'px';
+
+          self.animate(currentSlide, {bottom: 0, left: 0});
+        },
+        slideInBottomLeft: function(){
+          currentSlide.style.top = sliderHeight+'px';
+          currentSlide.style.right = sliderWidth+'px';
+
+          self.animate(currentSlide, {top: 0, right: 0});
+        },
+        slideInBottomRight: function(){
+          currentSlide.style.top = sliderHeight+'px';
+          currentSlide.style.left = sliderWidth+'px';
+
+          self.animate(currentSlide, {top: 0, left: 0});
         }
       }[transition];
     };
@@ -280,7 +301,7 @@
           }
         }
 
-        if (timePassed >= duration){
+        if (timePassed >= duration) {
           clearInterval(animate);
 
           // Make sure all properties are set to the correct final value
@@ -296,8 +317,6 @@
               obj.style[prop] = (propSuffix ? propValue+propSuffix : propValue);
             }
           }
-
-          console.log('Animation complete');
         }
       },24);
     };

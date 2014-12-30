@@ -13,10 +13,10 @@ body
 .slider
 {
   overflow: hidden;
-  height: 480px;
+  height: 140px;
   margin: 0 auto;
   position: relative;
-  width: 960px;
+  width: 320px;
 
   background: #aaa;
   box-shadow: 0 0 40px 10px #000;
