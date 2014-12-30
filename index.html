@@ -18,51 +18,58 @@
 </head>
 <body>
   <div class="container">
-    <h2>Fade in</h2>
+    <h1>Slider</h1>
+    <p>Basic slider written in vanilla javascript</p>
+    <h2>fadeIn</h2>
+    <p>Fade slide in</p>
     <div id="fadeSlider" class="slider">
-      <div class="slide" slider-transition="fadeIn"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
-      <div class="slide" slider-transition="fadeIn"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
-      <div class="slide" slider-transition="fadeIn"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
-      <div class="slide" slider-transition="fadeIn"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
     </div>
-    <h2>Slide in side</h2>
+    <h2>slideIn[side]</h2>
+    <p>Slide in from [side]</p>
     <div id="sideSlider" class="slider">
       <div class="slide" slider-transition="slideInTop"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
       <div class="slide" slider-transition="slideInRight"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
       <div class="slide" slider-transition="slideInBottom"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
       <div class="slide" slider-transition="slideInLeft"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
     </div>
-    <h2>Slide in corner</h2>
+    <h2>slideIn[verticalside][horizontalside]</h2>
+    <p>Slide in from a corner</p>
     <div id="cornerSlider" class="slider">
       <div class="slide" slider-transition="slideInTopLeft"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
       <div class="slide" slider-transition="slideInTopRight"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
       <div class="slide" slider-transition="slideInBottomRight"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
       <div class="slide" slider-transition="slideInBottomLeft"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
     </div>
-    <h2>Slide in horizontal</h2>
+    <h2>slideInHorizontal</h2>
+    <p>If slide is upcoming in the line, slide in from right side, otherwise slide in from left (suffix with "Reversed" for opposit).</p>
     <div id="horizontalSlider" class="slider">
-      <div class="slide" slider-transition="slideInHorizontal"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
-      <div class="slide" slider-transition="slideInHorizontal"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
-      <div class="slide" slider-transition="slideInHorizontal"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
-      <div class="slide" slider-transition="slideInHorizontal"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
     </div>
-    <h2>Slide in vertical</h2>
+    <h2>slideInVertical</h2>
+    <p>If slide is upcoming in the line, slide in from top side, otherwise slide in from bottom (suffix with "Reversed" for opposit).</p>
     <div id="verticalSlider" class="slider">
-      <div class="slide" slider-transition="slideInVertical"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
-      <div class="slide" slider-transition="slideInVertical"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
-      <div class="slide" slider-transition="slideInVertical"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
-      <div class="slide" slider-transition="slideInVertical"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
+      <div class="slide"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
     </div>
   </div>
 
   <!-- Javascript -->
   <script src="js/slider.js"></script>
   <script>
-    var fadeSlider = new slider('#fadeSlider', {transition: {easing: 'linear'}, random: true});
+    var fadeSlider = new slider('#fadeSlider', {transition: {effect: 'fadeIn', easing: 'linear'}, random: true});
     var sideSlider = new slider('#sideSlider', {random: true});
     var cornerSlider = new slider('#cornerSlider', {random: true});
-    var horizontalSlider = new slider('#horizontalSlider', {random: true});
-    var verticalSlider = new slider('#verticalSlider', {random: true});
+    var horizontalSlider = new slider('#horizontalSlider', {transition: {effect: 'slideInHorizontal'}});
+    var verticalSlider = new slider('#verticalSlider', {transition: {effect: 'slideInVertical'}});
   </script>
 </body>
 </html>

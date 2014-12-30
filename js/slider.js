@@ -2,19 +2,21 @@ function slider(slideIdentifier, custom_options){
   /**
    * Available options
    */
-  this.options = {
+  this.options_default = {
     classes: {
       navigation: '.slider-nav',
       slide: '.slide'
     },
     transition: {
       duration: 800,
-      transition: 'slideInRight',
+      effect: 'slideInHorizontal',
       easing: 'easeInOutExpo'
     },
     pause: 2000,
     random: false
   };
+
+  this.options = {};
 
   /**
    * Data holder for current instance, do not touch
@@ -35,16 +37,18 @@ function slider(slideIdentifier, custom_options){
     var 
       self = this,
       options = self.options,
+      options_default = self.options_default,
       data = self.data,
       slider = document.body.querySelector(slideIdentifier),
-      slides = slider.querySelectorAll(self.options.classes.slide);
+      slides;
+
+    options = (custom_options ? self._merge(options_default, custom_options) : options_default);
+    slides = slider.querySelectorAll(options.classes.slide);
+
+    self.options = options;
 
     data.slider = slider;
     data.slides = slides;
-
-    if (custom_options) {
-      self.options = self._merge(options, custom_options);
-    }
 
     self._initiate();
   };
@@ -88,7 +92,7 @@ function slider(slideIdentifier, custom_options){
         slideID = (options.random ? self.randomSlide() : currentSlideID+1);
 
       if (slideID >= slides.length) slideID = 0;
-      
+
       self.newSlide(slideID);
     }, options.pause);
   };
@@ -118,7 +122,7 @@ function slider(slideIdentifier, custom_options){
       lastSlide = slides[lastSlideID],
       currentSlideID = data.currentSlide,
       currentSlide = slides[currentSlideID],
-      transition = options.transition.transition,
+      transition = options.transition.effect,
       easing = options.transition.easing;
 
     if (!slides[slideID]) {
@@ -160,6 +164,9 @@ function slider(slideIdentifier, custom_options){
     }
   };
 
+  /*
+   * Get random slide ID
+   */
   this.randomSlide = function(){
     var 
       self = this,
@@ -190,21 +197,11 @@ function slider(slideIdentifier, custom_options){
       currentSlide = slides[currentSlideID],
       sliderWidth = data.slider.offsetWidth,
       sliderHeight = data.slider.offsetHeight,
-      transition = transition || options.transition.transition,
+      transition = transition || options.transition.effect,
       easing = easing || options.transition.easing,
       tweenFunction = self._tween(easing);
 
-    if (transition == 'slideInVertical') {
-      transition = (currentSlideID > lastSlideID ? 'slideInTop' : 'slideInBottom');
-    } else if (transition == 'slideInVerticalReversed') {
-      transition = (currentSlideID < lastSlideID ? 'slideInTop' : 'slideInBottom');
-    } else if (transition == 'slideInHorizontal') {
-      transition = (currentSlideID > lastSlideID ? 'slideInRight' : 'slideInLeft');
-    } else if (transition == 'slideInHorizontalReversed') {
-      transition = (currentSlideID < lastSlideID ? 'slideInRight' : 'slideInLeft');
-    }
-
-    return {
+    var transitions = {
       fadeIn: function(){
         currentSlide.style.opacity = 0;
 
@@ -254,7 +251,20 @@ function slider(slideIdentifier, custom_options){
 
         self.animate(currentSlide, {top: 0, left: 0});
       }
-    }[transition];
+    };
+
+    // If special transition, set transition to correct one
+    if (transition == 'slideInVertical') {
+      transition = (currentSlideID > lastSlideID ? 'slideInTop' : 'slideInBottom');
+    } else if (transition == 'slideInVerticalReversed') {
+      transition = (currentSlideID < lastSlideID ? 'slideInTop' : 'slideInBottom');
+    } else if (transition == 'slideInHorizontal') {
+      transition = (currentSlideID > lastSlideID ? 'slideInRight' : 'slideInLeft');
+    } else if (transition == 'slideInHorizontalReversed') {
+      transition = (currentSlideID < lastSlideID ? 'slideInRight' : 'slideInLeft');
+    }
+
+    return transitions[transition];
   };
 
   this.animate = function(obj, properties, duration, easing){
@@ -349,7 +359,7 @@ function slider(slideIdentifier, custom_options){
   }
 
   this._tween = function(type){
-    return {
+    var tweens = {
       /* Credit to Robert Penner @ http://gizma.com/easing */
       // simple linear tweening - no easing, no acceleration
       linear: function (t, b, c, d) {
@@ -471,7 +481,9 @@ function slider(slideIdentifier, custom_options){
         t -= 2;
         return c/2 * (Math.sqrt(1 - t*t) + 1) + b;
       }
-    }[type];
+    };
+
+    return tweens[type];
   };
 
   // Run construct after everything is defined
