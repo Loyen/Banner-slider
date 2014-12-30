@@ -253,28 +253,29 @@
           if (properties.hasOwnProperty(prop)) {
             var 
               currentValue = obj.style[prop],
-              newValue,
-              convertInt = false;
+              propValue = properties[prop],
+              newValue = null,
+              convertInt = false,
+              currentSuffix = null;
 
-            if (prop == 'left' 
-              || prop == 'right' 
-              || prop == 'top' 
-              || prop == 'bottom' 
-              || prop == 'height' 
-              || prop == 'width'
-              || prop == 'fontSize') {
-              convertInt = true;
-            }
-
+            if (currentValue !== parseInt(currentValue)) currentSuffix = currentValue.replace(/[0-9\.]+/, '');
             currentValue = parseInt(currentValue);
+            propValue = parseInt(propValue);
 
             if (currentValue > properties[prop]) {
-              newValue = currentValue-tweenFunction(timePassed, properties[prop], currentValue, duration);
+              newValue = currentValue-tweenFunction(timePassed, propValue, currentValue, duration);
             } else if (currentValue != properties[prop]) {
-              newValue = tweenFunction(timePassed, currentValue, properties[prop], duration);
+              newValue = tweenFunction(timePassed, currentValue, propValue, duration);
             } else { newValue = currentValue; }
 
-            if (convertInt) newValue = newValue+'px';
+            newValue = newValue+'';
+            newValue = newValue.replace(/([0-9]+(\.[0-9]{0,3})?).*/, "$1");
+            newValue = parseFloat(newValue);
+
+            if (currentSuffix) {
+              newValue = newValue+currentSuffix;
+            }
+
             obj.style[prop] = newValue;
           }
         }
@@ -285,15 +286,14 @@
           // Make sure all properties are set to the correct final value
           for (var prop in properties) {
             if(properties.hasOwnProperty(prop)) {
-              if (prop == 'left' 
-                || prop == 'right' 
-                || prop == 'top' 
-                || prop == 'bottom' 
-                || prop == 'height' 
-                || prop == 'width') {
-                convertInt = true;
-              }
-              obj.style[prop] = (convertInt ? properties[prop]+'px' : properties[prop]);
+              var propValue = properties[prop],
+                  propSuffix = null;
+
+              if (propValue !== parseInt(propValue)) propSuffix = propValue.replace(/[0-9\.]+/, '');
+
+              propValue = parseInt(propValue);
+
+              obj.style[prop] = (propSuffix ? propValue+propSuffix : propValue);
             }
           }
 
