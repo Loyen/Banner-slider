@@ -39,14 +39,30 @@
       <div class="slide" slider-transition="slideInBottomRight"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
       <div class="slide" slider-transition="slideInBottomLeft"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
     </div>
+    <h2>Slide in horizontal</h2>
+    <div id="horizontalSlider" class="slider">
+      <div class="slide" slider-transition="slideInHorizontal"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
+      <div class="slide" slider-transition="slideInHorizontal"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
+      <div class="slide" slider-transition="slideInHorizontal"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
+      <div class="slide" slider-transition="slideInHorizontal"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
+    </div>
+    <h2>Slide in vertical</h2>
+    <div id="verticalSlider" class="slider">
+      <div class="slide" slider-transition="slideInVertical"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
+      <div class="slide" slider-transition="slideInVertical"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
+      <div class="slide" slider-transition="slideInVertical"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
+      <div class="slide" slider-transition="slideInVertical"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
+    </div>
   </div>
 
   <!-- Javascript -->
   <script src="js/slider.js"></script>
   <script>
-    var fadeSlider = new slider('#fadeSlider');
-    var sideSlider = new slider('#sideSlider');
-    var cornerSlider = new slider('#cornerSlider');
+    var fadeSlider = new slider('#fadeSlider', {transition: {easing: 'linear'}, random: true});
+    var sideSlider = new slider('#sideSlider', {random: true});
+    var cornerSlider = new slider('#cornerSlider', {random: true});
+    var horizontalSlider = new slider('#horizontalSlider', {random: true});
+    var verticalSlider = new slider('#verticalSlider', {random: true});
   </script>
 </body>
 </html>

@@ -1,18 +1,24 @@
-function slider(slideIdentifier){
+function slider(slideIdentifier, custom_options){
+  /**
+   * Available options
+   */
   this.options = {
     classes: {
       navigation: '.slider-nav',
       slide: '.slide'
     },
-    animation: {
-      pause: 2000,
+    transition: {
       duration: 800,
       transition: 'slideInRight',
       easing: 'easeInOutExpo'
     },
+    pause: 2000,
     random: false
   };
 
+  /**
+   * Data holder for current instance, do not touch
+   */
   this.data = {
     currentSlide: null,
     lastSlide: null,
@@ -21,7 +27,11 @@ function slider(slideIdentifier){
     animation: { run: null }
   };
 
-  this._construct = function(slideIdentifier){
+  /**
+   * Constructor
+   * Initiate what slider container to use and setup basic data
+   */
+  this._construct = function(slideIdentifier, custom_options){
     var 
       self = this,
       options = self.options,
@@ -31,6 +41,10 @@ function slider(slideIdentifier){
 
     data.slider = slider;
     data.slides = slides;
+
+    if (custom_options) {
+      self.options = self._merge(options, custom_options);
+    }
 
     self._initiate();
   };
@@ -76,7 +90,7 @@ function slider(slideIdentifier){
       if (slideID >= slides.length) slideID = 0;
       
       self.newSlide(slideID);
-    }, options.animation.pause);
+    }, options.pause);
   };
 
   /**
@@ -104,8 +118,8 @@ function slider(slideIdentifier){
       lastSlide = slides[lastSlideID],
       currentSlideID = data.currentSlide,
       currentSlide = slides[currentSlideID],
-      transition = options.animation.transition,
-      easing = options.animation.easing;
+      transition = options.transition.transition,
+      easing = options.transition.easing;
 
     if (!slides[slideID]) {
       console.log('Slide '+slideID+' do not exist.');
@@ -139,7 +153,7 @@ function slider(slideIdentifier){
 
       // Remove old slide if any
       if (lastSlide) {
-        setTimeout(function(){ lastSlide.style.display = 'none'; }, options.animation.duration);
+        setTimeout(function(){ lastSlide.style.display = 'none'; }, options.transition.duration);
       }
 
       data.lastSlide = data.currentSlide;
@@ -176,8 +190,8 @@ function slider(slideIdentifier){
       currentSlide = slides[currentSlideID],
       sliderWidth = data.slider.offsetWidth,
       sliderHeight = data.slider.offsetHeight,
-      transition = transition || options.animation.transition,
-      easing = easing || options.animation.easing,
+      transition = transition || options.transition.transition,
+      easing = easing || options.transition.easing,
       tweenFunction = self._tween(easing);
 
     if (transition == 'slideInVertical') {
@@ -251,8 +265,8 @@ function slider(slideIdentifier){
       tweenFunction,
       timeStart = new Date().getTime();
 
-    if (!duration) duration = options.animation.duration;
-    if (!easing) easing = options.animation.easing;
+    if (!duration) duration = options.transition.duration;
+    if (!easing) easing = options.transition.easing;
 
     tweenFunction = self._tween(easing);
 
@@ -312,6 +326,27 @@ function slider(slideIdentifier){
       }
     },24);
   };
+
+  this._merge = function(){
+    var 
+      self = this,
+      arraynew = {};
+
+    for (var ai in arguments) {
+      var array = arguments[ai];
+      for (var index in array) {
+        var value = null;
+        if (array.hasOwnProperty(index)) {
+          if (typeof array[index] == 'object' && arraynew[index] && typeof arraynew[index] == 'object') value = self._merge(arraynew[index], array[index]);
+          else value = array[index];
+
+          arraynew[index] = value;
+        }
+      }
+    }
+
+    return arraynew;
+  }
 
   this._tween = function(type){
     return {
@@ -439,6 +474,6 @@ function slider(slideIdentifier){
     }[type];
   };
 
-
-  this._construct(slideIdentifier);
+  // Run construct after everything is defined
+  this._construct(slideIdentifier, custom_options);
 }
