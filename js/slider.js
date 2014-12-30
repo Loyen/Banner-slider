@@ -14,7 +14,7 @@
       },
       animation: {
         pause: 2000,
-        duration: 1000,
+        duration: 800,
         transition: 'slideInRight',
         easing: 'easeInOutExpo'
       },
@@ -201,94 +201,105 @@
         fadeIn: function(){
           currentSlide.style.opacity = 0;
 
-          self.animate({
-            run: function(duration, timePassed){
-              var newOpacity = tweenFunction(timePassed, 0, 1, duration);
-              if (newOpacity >= 1) newOpacity = 1;
-              currentSlide.style.opacity = newOpacity;
-            },
-            complete: function(){ currentSlide.style.opacity = 1; }
-          });
+          self.animate(currentSlide, {opacity: 1});
         },
         slideInTop: function(){
-          currentSlide.style.top = '-'+sliderWidth+'px';
-          var offsetTop = currentSlide.offsetTop;
-
-          self.animate({
-            run: function(duration, timePassed){
-              var newOffset = offsetTop-tweenFunction(timePassed, 0, offsetTop, duration)+'px';
-              if (newOffset >= sliderHeight) newOffset = sliderHeight;
-              currentSlide.style.top = newOffset;
-            },
-            complete: function(){ currentSlide.style.top = 0; }
-          });
-        },
-        slideInRight: function(){
-          currentSlide.style.right = sliderWidth+'px';
-          var offsetLeft = currentSlide.offsetLeft;
-
-          self.animate({
-            run: function(duration, timePassed){
-              var newOffset = offsetLeft-tweenFunction(timePassed, 0, offsetLeft, duration)+'px';
-              if (newOffset >= sliderWidth) newOffset = sliderWidth;
-              currentSlide.style.right = newOffset;
-            },
-            complete: function(){ currentSlide.style.right = 0; }
-          });
-        },
-        slideInBottom: function(){
           currentSlide.style.bottom = sliderWidth+'px';
           var offsetTop = currentSlide.offsetTop;
 
-          self.animate({
-            run: function(duration, timePassed){
-              var newOffset = offsetTop-tweenFunction(timePassed, 0, offsetTop, duration)+'px';
-              if (newOffset >= sliderHeight) newOffset = sliderHeight;
-              currentSlide.style.bottom = newOffset;
-            },
-            complete: function(){ currentSlide.style.bottom = 0; }
-          });
+          self.animate(currentSlide, {bottom: 0});
         },
-        slideInLeft: function(){
-          currentSlide.style.left = '-'+sliderWidth+'px';
+        slideInRight: function(){
+          currentSlide.style.left = sliderWidth+'px';
           var offsetLeft = currentSlide.offsetLeft;
 
-          self.animate({
-            run: function(duration, timePassed){
-              var newOffset = offsetLeft-tweenFunction(timePassed, 0, offsetLeft, duration)+'px';
-              if (newOffset >= sliderWidth) newOffset = sliderWidth;
-              currentSlide.style.left = newOffset;
-            },
-            complete: function(){ currentSlide.style.left = 0; }
-          });
+          self.animate(currentSlide, {left: 0});
+        },
+        slideInBottom: function(){
+          currentSlide.style.top = sliderWidth+'px';
+          var offsetTop = currentSlide.offsetTop;
+
+          self.animate(currentSlide, {top: 0});
+        },
+        slideInLeft: function(){
+          currentSlide.style.right = sliderWidth+'px';
+          var offsetLeft = currentSlide.offsetLeft;
+
+          self.animate(currentSlide, {right: 0});
         }
       }[transition];
     };
 
-    slider.prototype.animate = function(obj){
+    slider.prototype.animate = function(obj, properties, duration, easing){
       var 
         self = this,
         options = self.options,
-        duration = obj.duration || options.animation.duration,
+        data = self.data,
+        tweenFunction,
         timeStart = new Date().getTime();
+
+      if (!duration) duration = options.animation.duration;
+      if (!easing) easing = options.animation.easing;
+
+      tweenFunction = self._tween(easing);
 
       var animate = setInterval(function(){
         var timePassed = new Date().getTime() - timeStart;
 
         if (timePassed >= duration) timePassed = duration;
 
-        // Run animation, log if none set
-        if (obj.run) obj.run(duration, timePassed);
+        // Run property update per property
+        for (var prop in properties) {
+          if (properties.hasOwnProperty(prop)) {
+            var 
+              currentValue = obj.style[prop],
+              newValue,
+              convertInt = false;
+
+            if (prop == 'left' 
+              || prop == 'right' 
+              || prop == 'top' 
+              || prop == 'bottom' 
+              || prop == 'height' 
+              || prop == 'width'
+              || prop == 'fontSize') {
+              convertInt = true;
+            }
+
+            currentValue = parseInt(currentValue);
+
+            if (currentValue > properties[prop]) {
+              newValue = currentValue-tweenFunction(timePassed, properties[prop], currentValue, duration);
+            } else if (currentValue != properties[prop]) {
+              newValue = tweenFunction(timePassed, currentValue, properties[prop], duration);
+            } else { newValue = currentValue; }
+
+            if (convertInt) newValue = newValue+'px';
+            obj.style[prop] = newValue;
+          }
+        }
 
         if (timePassed >= duration){
           clearInterval(animate);
 
-          // Do complete function 
-          if (obj.complete) obj.complete();
+          // Make sure all properties are set to the correct final value
+          for (var prop in properties) {
+            if(properties.hasOwnProperty(prop)) {
+              if (prop == 'left' 
+                || prop == 'right' 
+                || prop == 'top' 
+                || prop == 'bottom' 
+                || prop == 'height' 
+                || prop == 'width') {
+                convertInt = true;
+              }
+              obj.style[prop] = (convertInt ? properties[prop]+'px' : properties[prop]);
+            }
+          }
 
           console.log('Animation complete');
         }
-      },0);
+      },24);
     };
 
     slider.prototype._tween = function(type){
