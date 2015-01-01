@@ -9,6 +9,7 @@ function slider(slideIdentifier, custom_options){
       direction: 'slider-directions',
       directionPrev: 'slider-directions-prev',
       directionNext: 'slider-directions-next',
+      slider: 'slider',
       slide: 'slide',
     },
     transition: {
@@ -31,6 +32,7 @@ function slider(slideIdentifier, custom_options){
   this.data = {
     currentSlide: null,
     lastSlide: null,
+    sliderWrapper: null,
     slider: null,
     slides: [],
     navigation: null,
@@ -46,14 +48,12 @@ function slider(slideIdentifier, custom_options){
   this._construct = function(slideIdentifier, custom_options){
     var 
       self = this,
-      options = self.options,
       options_default = self.options_default,
+      options = (custom_options ? self._merge(options_default, custom_options) : options_default),
       data = self.data,
-      slider = document.body.querySelector(slideIdentifier),
-      slides;
-
-    options = (custom_options ? self._merge(options_default, custom_options) : options_default);
-    slides = slider.querySelectorAll('.'+options.classes.slide);
+      sliderWrapper = document.body.querySelector(slideIdentifier),
+      slider = sliderWrapper.querySelector('.'+options.classes.slider),
+      slides = slider.querySelectorAll('.'+options.classes.slide);
     
     // If there's more than one slide
     if (slides.length > 1) {
@@ -93,7 +93,8 @@ function slider(slideIdentifier, custom_options){
         direction.appendChild(directionPrev);
         direction.appendChild(directionNext);
 
-        slider.appendChild(direction);
+        // Append to sliderWrapper
+        sliderWrapper.appendChild(direction);
       }
 
       // If navigation list is set to be shown, add them
@@ -103,12 +104,16 @@ function slider(slideIdentifier, custom_options){
 
         for (var i=0;i<slides.length;i++) {
           var 
-            navItem = document.createElement('div');
+            navItem = document.createElement('div'),
+            slide = slides[i];
 
-          navItem.setAttribute('class', options.classes.navigationItem);
           navItem.setAttribute('slide', i);
+          navItem.setAttribute('class', options.classes.navigationItem);
 
-          navItem.innerHTML = i+1;
+          if (slide.getAttribute('id'))
+            navItem.setAttribute('class', navItem.getAttribute('class')+' '+options.classes.navigationItem+'-'+slide.getAttribute('id'));
+
+          navItem.innerHTML = (slide.getAttribute('slider-name') ? slide.getAttribute('slider-name') : i+1);
 
           // Add click events
           navItem.addEventListener('mouseup', function(e){
@@ -123,8 +128,8 @@ function slider(slideIdentifier, custom_options){
 
         self.data.navigation = navigation.children;
 
-        // Append to slider
-        slider.appendChild(navigation);
+        // Append to sliderWrapper
+        sliderWrapper.appendChild(navigation);
       }
     } else {
       options.navigation = false;
@@ -141,6 +146,7 @@ function slider(slideIdentifier, custom_options){
 
     self.options = options;
 
+    data.sliderWrapper = sliderWrapper;
     data.slider = slider;
     data.slides = slides;
 
@@ -259,10 +265,10 @@ function slider(slideIdentifier, custom_options){
         if (lastSlide) {
           navLastSlide = data.navigation[lastSlideID];
 
-          navLastSlide.setAttribute('class', options.classes.navigationItem);
+          navLastSlide.setAttribute('class', navLastSlide.getAttribute('class').replace(/\s?active/, ''));
         }
 
-        navCurrentSlide.setAttribute('class', options.classes.navigationItem+' active');
+        navCurrentSlide.setAttribute('class', navCurrentSlide.getAttribute('class')+' active');
       }
 
       // If noAnimation is not set, run transition for current slide
