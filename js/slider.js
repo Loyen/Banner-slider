@@ -34,8 +34,7 @@ function slider(slideIdentifier, custom_options){
     slides: [],
     navigation: null,
     animation: { run: null },
-    run: true,
-    transition: false
+    run: true
   };
 
   /**
@@ -210,8 +209,6 @@ function slider(slideIdentifier, custom_options){
 
     if (!slides[slideID]) {
       console.log('Slide '+slideID+' do not exist.');
-    } else if (data.transition) {
-      console.log('Slider is currently running a transition. You will have to wait.'); 
     } else {
       currentSlideID = slideID;
       currentSlide = slides[currentSlideID];
@@ -385,9 +382,6 @@ function slider(slideIdentifier, custom_options){
 
     tweenFunction = self._tween(easing);
 
-    // Set transition to true
-    self.data.transition = true;
-
     var animate = setInterval(function(){
       var timePassed = new Date().getTime() - timeStart;
 
@@ -439,9 +433,6 @@ function slider(slideIdentifier, custom_options){
             propValue = parseInt(propValue);
 
             obj.style[prop] = (propSuffix ? propValue+propSuffix : propValue);
-
-            // Set transition to false
-            self.data.transition = false;
           }
         }
       }
