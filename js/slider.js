@@ -153,9 +153,9 @@ function slider(slideIdentifier, custom_options){
     }
 
     // Set current slide
-    data.currentSlide = (options.random ? self.randomSlide() : 0);
+    var newSlideID = (options.random ? self.randomSlide() : 0);
 
-    self.newSlide(data.currentSlide, true);
+    self.newSlide(newSlideID, true);
     self.start();
   };
 
@@ -210,6 +210,8 @@ function slider(slideIdentifier, custom_options){
 
     if (!slides[slideID]) {
       console.log('Slide '+slideID+' do not exist.');
+    } else if (slideID == currentSlideID) {
+      console.log('Slide is already there.');
     } else if (data.transition) {
       console.log('Slider is currently running a transition. You will have to wait.'); 
     } else {
