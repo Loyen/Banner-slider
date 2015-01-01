@@ -35,14 +35,17 @@ body
 .slider .slider-directions .slider-directions-prev,
 .slider .slider-directions .slider-directions-next
 {
+  cursor: pointer;
+  background: #eee;
+  color: #333;
+  height: 48px;
   position: absolute;
   top: 35%;
-  background: #eee;
   width: 24px;
-  height: 48px;
   z-index: 10;
+  box-shadow: 0;
 
-  transition-property: left,right;
+  transition-property: left,right,box-shadow;
   transition-duration: 0.5s;
   transition-timing-function: ease;
 }
@@ -53,13 +56,56 @@ body
   content: 'O';
   display: block;
   line-height: 48px;
-  color: #333;
 }
 
 .slider .slider-directions .slider-directions-prev { left: -24px; }
-.slider:hover .slider-directions .slider-directions-prev { left: 0; }
+.slider:hover .slider-directions .slider-directions-prev { left: 0; box-shadow: 0 0 8px 0 rgba(0,0,0,0.8); }
 .slider .slider-directions .slider-directions-prev:after { content: '«'; }
 
 .slider .slider-directions .slider-directions-next { right: -24px; }
-.slider:hover .slider-directions .slider-directions-next { right: 0; }
+.slider:hover .slider-directions .slider-directions-next { right: 0; box-shadow: 0 0 8px 0 rgba(0,0,0,0.8); }
 .slider .slider-directions .slider-directions-next:after { content: '»'; }
+
+.slider .slider-navigation
+{
+  bottom: -24px;
+  color: #333;
+  left: 32%;
+  position: absolute;
+  z-index: 10;
+
+  transition-property: bottom;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
+}
+
+.slider:hover .slider-navigation { bottom: 0; }
+
+.slider .slider-navigation .slider-navigation-item
+{
+  cursor: pointer;
+  background: #eee;
+  border-radius: 100% 100% 0 0;
+  box-shadow: 0;
+  display: inline-block;
+  float: left;
+  height: 22px;
+  line-height: 24px;
+  margin-left: 2px;
+  margin-right: 2px;
+  text-align: center;
+  width: 24px;
+
+  transition-property: box-shadow;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
+}
+
+.slider:hover .slider-navigation .slider-navigation-item {
+  box-shadow: 0 0 8px 0 rgba(0,0,0,0.8);
+}
+
+.slider .slider-navigation .slider-navigation-item.active {
+  background: #333;
+  color: #eee;
+}

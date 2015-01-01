@@ -5,6 +5,7 @@ function slider(slideIdentifier, custom_options){
   this.options_default = {
     classes: {
       navigation: 'slider-navigation',
+      navigationItem: 'slider-navigation-item',
       direction: 'slider-directions',
       directionPrev: 'slider-directions-prev',
       directionNext: 'slider-directions-next',
@@ -17,7 +18,8 @@ function slider(slideIdentifier, custom_options){
     },
     pause: 2000,
     random: false,
-    direction: true
+    direction: true,
+    navigation: true
   };
 
   this.options = {};
@@ -30,6 +32,7 @@ function slider(slideIdentifier, custom_options){
     lastSlide: null,
     slider: null,
     slides: [],
+    navigation: null,
     animation: { run: null },
     run: true
   };
@@ -62,7 +65,7 @@ function slider(slideIdentifier, custom_options){
       directionNext.setAttribute('class', options.classes.directionNext);
 
       // Add click event for "previous"
-      directionPrev.addEventListener('mouseup', function(e){
+      directionPrev.addEventListener('mouseup', function(){
         var newSlideID;
 
         newSlideID = data.currentSlide-1;
@@ -73,7 +76,7 @@ function slider(slideIdentifier, custom_options){
       });
 
       // Add click event for "next"
-      directionNext.addEventListener('mouseup', function(e){
+      directionNext.addEventListener('mouseup', function(){
         var newSlideID;
 
         newSlideID = data.currentSlide+1;
@@ -89,9 +92,40 @@ function slider(slideIdentifier, custom_options){
       slider.appendChild(direction);
     }
 
+    // If navigation list is set to be shown, add them
+    if (options.navigation) {
+      var navigation = document.createElement('div');
+      navigation.setAttribute('class', options.classes.navigation);
+
+      for (var i=0;i<slides.length;i++) {
+        var 
+          navItem = document.createElement('div');
+
+        navItem.setAttribute('class', options.classes.navigationItem);
+        navItem.setAttribute('slide', i);
+
+        navItem.innerHTML = i+1;
+
+        // Add click events
+        navItem.addEventListener('mouseup', function(e){
+          var navItem = e.target,
+              newSlideID = navItem.getAttribute('slide');
+
+          self.newSlide(newSlideID); 
+        });
+
+        navigation.appendChild(navItem);
+      }
+
+      self.data.navigation = navigation.children;
+
+      // Append to slider
+      slider.appendChild(navigation);
+    }
+
     // Add listeners to pause the slider when hovering over item
-    slider.addEventListener('mouseover', function(e){ self.stop(); self.data.run = false; });
-    slider.addEventListener('mouseout', function(e){ self.start(); self.data.run = true; });
+    slider.addEventListener('mouseover', function(){ self.stop(); self.data.run = false; });
+    slider.addEventListener('mouseout', function(){ self.start(); self.data.run = true; });
 
     self.options = options;
 
@@ -176,8 +210,9 @@ function slider(slideIdentifier, custom_options){
     if (!slides[slideID]) {
       console.log('Slide '+slideID+' do not exist.');
     } else {
-      currentSlide = slides[slideID];
-      data.currentSlide = slideID;
+      currentSlideID = slideID;
+      currentSlide = slides[currentSlideID];
+      data.currentSlide = currentSlideID;
 
       currentSlide.style.left = 'auto';
       currentSlide.style.top = 'auto';
@@ -192,6 +227,22 @@ function slider(slideIdentifier, custom_options){
 
       if (lastSlide) lastSlide.style.zIndex = 0;
 
+      if (options.navigation) {
+        var
+          navCurrentSlide = data.navigation[currentSlideID], 
+          navCurrentSlideClass = navCurrentSlide.getAttribute('class'),
+          navLastSlide, 
+          navLastSlideClass;
+
+        if (lastSlide) {
+          navLastSlide = data.navigation[lastSlideID];
+
+          navLastSlide.setAttribute('class', options.classes.navigationItem);
+        }
+
+        navCurrentSlide.setAttribute('class', options.classes.navigationItem+' active');
+      }
+
       // If noAnimation is not set, run transition for current slide
       if (!noAnimation) {
         if (self.data.run) self.stop(); 
@@ -203,7 +254,7 @@ function slider(slideIdentifier, custom_options){
         if (self.data.run) self.start();
       }
 
-      // Remove old slide if any
+      // Remove old slide if any when animation is done
       if (lastSlide) {
         setTimeout(function(){ lastSlide.style.display = 'none'; }, options.transition.duration);
       }
