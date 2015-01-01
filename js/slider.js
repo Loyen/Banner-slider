@@ -17,6 +17,7 @@ function slider(slideIdentifier, custom_options){
       easing: 'easeInOutExpo'
     },
     pause: 2000,
+    autoRun: true,
     random: false,
     direction: true,
     navigation: true
@@ -125,13 +126,17 @@ function slider(slideIdentifier, custom_options){
         // Append to slider
         slider.appendChild(navigation);
       }
-
-      // Add listeners to pause the slider when hovering over item
-      slider.addEventListener('mouseover', function(){ self.stop(); self.data.run = false; });
-      slider.addEventListener('mouseout', function(){ self.start(); self.data.run = true; });
     } else {
       options.navigation = false;
       options.direction = false;
+      options.autoRun = false;
+    }
+
+    // If auto run is on, add hover events to slider, otherwise set data.run to false
+    if (options.autoRun){
+      // Add listeners to pause the slider when hovering over item
+      slider.addEventListener('mouseover', function(){ self.stop(); self.data.run = false; });
+      slider.addEventListener('mouseout', function(){ self.start(); self.data.run = true; });
     }
 
     self.options = options;
@@ -162,7 +167,10 @@ function slider(slideIdentifier, custom_options){
     var newSlideID = (options.random ? self.randomSlide() : 0);
 
     self.newSlide(newSlideID, true);
-    if (slides.length > 1) self.start();
+
+    // If auto run, start the slider
+    if (options.autoRun) self.start();
+    else data.run = false;
   };
 
   /**
