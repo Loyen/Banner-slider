@@ -53,80 +53,86 @@ function slider(slideIdentifier, custom_options){
 
     options = (custom_options ? self._merge(options_default, custom_options) : options_default);
     slides = slider.querySelectorAll('.'+options.classes.slide);
-
-    // If directions is set to be shown, add them
-    if (options.direction) {
-      var 
-        direction = document.createElement('div'),
-        directionPrev = document.createElement('div'),
-        directionNext = document.createElement('div');
-
-      direction.setAttribute('class', options.classes.direction);
-      directionPrev.setAttribute('class', options.classes.directionPrev);
-      directionNext.setAttribute('class', options.classes.directionNext);
-
-      // Add click event for "previous"
-      directionPrev.addEventListener('mouseup', function(){
-        var newSlideID;
-
-        newSlideID = data.currentSlide-1;
-
-        if (newSlideID < 0) newSlideID = slides.length-1;
-
-        self.newSlide(newSlideID);
-      });
-
-      // Add click event for "next"
-      directionNext.addEventListener('mouseup', function(){
-        var newSlideID;
-
-        newSlideID = data.currentSlide+1;
-
-        if (newSlideID > slides.length-1) newSlideID = 0;
-
-        self.newSlide(newSlideID);
-      });
-
-      direction.appendChild(directionPrev);
-      direction.appendChild(directionNext);
-
-      slider.appendChild(direction);
-    }
-
-    // If navigation list is set to be shown, add them
-    if (options.navigation) {
-      var navigation = document.createElement('div');
-      navigation.setAttribute('class', options.classes.navigation);
-
-      for (var i=0;i<slides.length;i++) {
+    
+    // If there's more than one slide
+    if (slides.length > 1) {
+      // If directions is set to be shown, add them
+      if (options.direction) {
         var 
-          navItem = document.createElement('div');
+          direction = document.createElement('div'),
+          directionPrev = document.createElement('div'),
+          directionNext = document.createElement('div');
 
-        navItem.setAttribute('class', options.classes.navigationItem);
-        navItem.setAttribute('slide', i);
+        direction.setAttribute('class', options.classes.direction);
+        directionPrev.setAttribute('class', options.classes.directionPrev);
+        directionNext.setAttribute('class', options.classes.directionNext);
 
-        navItem.innerHTML = i+1;
+        // Add click event for "previous"
+        directionPrev.addEventListener('mouseup', function(){
+          var newSlideID;
 
-        // Add click events
-        navItem.addEventListener('mouseup', function(e){
-          var navItem = e.target,
-              newSlideID = navItem.getAttribute('slide');
+          newSlideID = data.currentSlide-1;
 
-          self.newSlide(newSlideID); 
+          if (newSlideID < 0) newSlideID = slides.length-1;
+
+          self.newSlide(newSlideID);
         });
 
-        navigation.appendChild(navItem);
+        // Add click event for "next"
+        directionNext.addEventListener('mouseup', function(){
+          var newSlideID;
+
+          newSlideID = data.currentSlide+1;
+
+          if (newSlideID > slides.length-1) newSlideID = 0;
+
+          self.newSlide(newSlideID);
+        });
+
+        direction.appendChild(directionPrev);
+        direction.appendChild(directionNext);
+
+        slider.appendChild(direction);
       }
 
-      self.data.navigation = navigation.children;
+      // If navigation list is set to be shown, add them
+      if (options.navigation) {
+        var navigation = document.createElement('div');
+        navigation.setAttribute('class', options.classes.navigation);
 
-      // Append to slider
-      slider.appendChild(navigation);
+        for (var i=0;i<slides.length;i++) {
+          var 
+            navItem = document.createElement('div');
+
+          navItem.setAttribute('class', options.classes.navigationItem);
+          navItem.setAttribute('slide', i);
+
+          navItem.innerHTML = i+1;
+
+          // Add click events
+          navItem.addEventListener('mouseup', function(e){
+            var navItem = e.target,
+                newSlideID = navItem.getAttribute('slide');
+
+            self.newSlide(newSlideID); 
+          });
+
+          navigation.appendChild(navItem);
+        }
+
+        self.data.navigation = navigation.children;
+
+        // Append to slider
+        slider.appendChild(navigation);
+      }
+
+      // Add listeners to pause the slider when hovering over item
+      slider.addEventListener('mouseover', function(){ self.stop(); self.data.run = false; });
+      slider.addEventListener('mouseout', function(){ self.start(); self.data.run = true; });
+    } else {
+      options.navigation = false;
+      options.direction = false;
     }
-
-    // Add listeners to pause the slider when hovering over item
-    slider.addEventListener('mouseover', function(){ self.stop(); self.data.run = false; });
-    slider.addEventListener('mouseout', function(){ self.start(); self.data.run = true; });
 
     self.options = options;
 
@@ -156,7 +162,7 @@ function slider(slideIdentifier, custom_options){
     var newSlideID = (options.random ? self.randomSlide() : 0);
 
     self.newSlide(newSlideID, true);
-    self.start();
+    if (slides.length > 1) self.start();
   };
 
   /**
@@ -207,6 +213,9 @@ function slider(slideIdentifier, custom_options){
       currentSlide = slides[currentSlideID],
       transition = options.transition.effect,
       easing = options.transition.easing;
+
+    // Make sure slideID is an int
+    slideID = parseInt(slideID);
 
     if (!slides[slideID]) {
       console.log('Slide '+slideID+' do not exist.');

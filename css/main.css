@@ -70,7 +70,7 @@ body
 {
   bottom: -24px;
   color: #333;
-  left: 32%;
+  left: 2px;
   position: absolute;
   z-index: 10;
 
@@ -79,22 +79,21 @@ body
   transition-timing-function: ease;
 }
 
-.slider:hover .slider-navigation { bottom: 0; }
+.slider:hover .slider-navigation { bottom: 2px; }
 
 .slider .slider-navigation .slider-navigation-item
 {
   cursor: pointer;
   background: #eee;
-  border-radius: 100% 100% 0 0;
+  border-radius: 100%;
   box-shadow: 0;
   display: inline-block;
   float: left;
-  height: 22px;
-  line-height: 24px;
+  height: 12px;
   margin-left: 2px;
   margin-right: 2px;
-  text-align: center;
-  width: 24px;
+  text-indent: -9999px;
+  width: 12px;
 
   transition-property: box-shadow;
   transition-duration: 0.5s;
