@@ -4,8 +4,11 @@ function slider(slideIdentifier, custom_options){
    */
   this.options_default = {
     classes: {
-      navigation: '.slider-nav',
-      slide: '.slide'
+      navigation: 'slider-navigation',
+      direction: 'slider-directions',
+      directionPrev: 'slider-directions-prev',
+      directionNext: 'slider-directions-next',
+      slide: 'slide',
     },
     transition: {
       duration: 800,
@@ -13,7 +16,8 @@ function slider(slideIdentifier, custom_options){
       easing: 'easeInOutExpo'
     },
     pause: 2000,
-    random: false
+    random: false,
+    direction: true
   };
 
   this.options = {};
@@ -26,7 +30,8 @@ function slider(slideIdentifier, custom_options){
     lastSlide: null,
     slider: null,
     slides: [],
-    animation: { run: null }
+    animation: { run: null },
+    run: true
   };
 
   /**
@@ -43,7 +48,50 @@ function slider(slideIdentifier, custom_options){
       slides;
 
     options = (custom_options ? self._merge(options_default, custom_options) : options_default);
-    slides = slider.querySelectorAll(options.classes.slide);
+    slides = slider.querySelectorAll('.'+options.classes.slide);
+
+    // If directions is set to be shown, add them
+    if (options.direction) {
+      var 
+        direction = document.createElement('div'),
+        directionPrev = document.createElement('div'),
+        directionNext = document.createElement('div');
+
+      direction.setAttribute('class', options.classes.direction);
+      directionPrev.setAttribute('class', options.classes.directionPrev);
+      directionNext.setAttribute('class', options.classes.directionNext);
+
+      // Add click event for "previous"
+      directionPrev.addEventListener('mouseup', function(e){
+        var newSlideID;
+
+        newSlideID = data.currentSlide-1;
+
+        if (newSlideID < 0) newSlideID = slides.length-1;
+
+        self.newSlide(newSlideID);
+      });
+
+      // Add click event for "next"
+      directionNext.addEventListener('mouseup', function(e){
+        var newSlideID;
+
+        newSlideID = data.currentSlide+1;
+
+        if (newSlideID > slides.length-1) newSlideID = 0;
+
+        self.newSlide(newSlideID);
+      });
+
+      direction.appendChild(directionPrev);
+      direction.appendChild(directionNext);
+
+      slider.appendChild(direction);
+    }
+
+    // Add listeners to pause the slider when hovering over item
+    slider.addEventListener('mouseover', function(e){ self.stop(); self.data.run = false; });
+    slider.addEventListener('mouseout', function(e){ self.start(); self.data.run = true; });
 
     self.options = options;
 
@@ -146,13 +194,13 @@ function slider(slideIdentifier, custom_options){
 
       // If noAnimation is not set, run transition for current slide
       if (!noAnimation) {
-        self.stop(); 
+        if (self.data.run) self.stop(); 
 
         var runTransition = self.transition(transition, easing);
 
         runTransition();
 
-        self.start();
+        if (self.data.run) self.start();
       }
 
       // Remove old slide if any
@@ -267,6 +315,9 @@ function slider(slideIdentifier, custom_options){
     return transitions[transition];
   };
 
+  /**
+   * Animate object from current prop value to the one specified in properties
+   */
   this.animate = function(obj, properties, duration, easing){
     var 
       self = this,
@@ -337,6 +388,9 @@ function slider(slideIdentifier, custom_options){
     },24);
   };
 
+  /**
+   * Merge multiple objects into one
+   */
   this._merge = function(){
     var 
       self = this,

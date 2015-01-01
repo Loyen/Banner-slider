@@ -31,3 +31,35 @@ body
 }
 
 .slider .slide img { width: 100%; height: 100%; }
+
+.slider .slider-directions .slider-directions-prev,
+.slider .slider-directions .slider-directions-next
+{
+  position: absolute;
+  top: 35%;
+  background: #eee;
+  width: 24px;
+  height: 48px;
+  z-index: 10;
+
+  transition-property: left,right;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
+}
+
+.slider .slider-directions .slider-directions-prev:after,
+.slider .slider-directions .slider-directions-next:after
+{
+  content: 'O';
+  display: block;
+  line-height: 48px;
+  color: #333;
+}
+
+.slider .slider-directions .slider-directions-prev { left: -24px; }
+.slider:hover .slider-directions .slider-directions-prev { left: 0; }
+.slider .slider-directions .slider-directions-prev:after { content: '«'; }
+
+.slider .slider-directions .slider-directions-next { right: -24px; }
+.slider:hover .slider-directions .slider-directions-next { right: 0; }
+.slider .slider-directions .slider-directions-next:after { content: '»'; }
