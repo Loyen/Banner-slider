@@ -32,7 +32,6 @@ function slider(slideIdentifier, custom_options){
   this.data = {
     currentSlide: null,
     lastSlide: null,
-    sliderWrapper: null,
     slider: null,
     slides: [],
     navigation: null,
@@ -146,7 +145,6 @@ function slider(slideIdentifier, custom_options){
 
     self.options = options;
 
-    data.sliderWrapper = sliderWrapper;
     data.slider = slider;
     data.slides = slides;
 

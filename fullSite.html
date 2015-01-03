@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Template</title>
+
+  <!-- Meta -->
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Alternative to above: Disables zooming -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <!-- Fonts -->
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+
+  <!-- Stylesheets -->
+  <link href="css/normalize.css" rel="stylesheet" />
+  <link href="../Nitrogen/nitrogen.css" rel="stylesheet" />
+  <style>
+html, body 
+{
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#siteSlider
+{
+  height: 90%;
+  width: 100%;
+}
+
+#siteSlider .slider 
+{
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+#siteSlider .slider .slide
+{
+  display: none;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+#siteSlider .slider-navigation
+{
+  bottom: 0;
+  color: #333;
+  height: 10%;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+
+  transition-property: bottom;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
+}
+
+#siteSlider .slider-navigation-item
+{
+  cursor: pointer;
+  background: #eee;
+  box-shadow: 0;
+  display: inline-block;
+  height: 100%;
+  float: left;
+  padding: 4px 8px;
+  text-align: center;
+  width: 33.33333%;
+
+  transition-property: box-shadow;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
+}
+
+.container { box-shadow: 0 0 0 4px #333; }
+
+.page 
+{
+  height: 100%;
+  width: 100%;
+  background: #eee;
+}
+
+.page.front, #siteSlider .slider-navigation-item-front 
+{ 
+  color: #333;
+  background: #3ee; 
+}
+
+.page.work, #siteSlider .slider-navigation-item-work 
+{ 
+  color: #eee;
+  background: #e3e; 
+}
+
+.page.contact, #siteSlider .slider-navigation-item-contact 
+{ 
+  color: #333;
+  background: #ee3; 
+}
+  </style>
+</head>
+<body>
+    <div id="siteSlider">
+      <div class="slider">
+        <div id="front" slider-name="Home" class="slide">
+          <div class="page front">
+            <div class="container">
+              <h1>Welcome</h1>
+            </div>
+          </div>
+        </div>
+        <div id="work" slider-name="Work" class="slide">
+          <div class="page work">
+            <div class="container">
+              <h1>Work</h1>
+            </div>
+          </div>
+        </div>
+        <div id="contact" slider-name="Contact" class="slide">
+          <div class="page contact">
+            <div class="container">
+              <h1>Contact</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- Javascript -->
+  <script src="js/slider.js"></script>
+  <script>
+    var siteSlider = new slider('#siteSlider', {transition: {effect: 'slideInBottom'}, direction: false, autoRun: false});
+  </script>
+</body>
+</html>
