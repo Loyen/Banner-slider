@@ -400,13 +400,19 @@ function slider(slideIdentifier, custom_options){
       self = this,
       options = self.options,
       data = self.data,
+      properties_object = {},
       tweenFunction,
       timeStart = new Date().getTime();
 
-    if (!duration) duration = options.transition.duration;
+    if (!duration && duration !== 0) duration = options.transition.duration;
     if (!easing) easing = options.transition.easing;
 
     tweenFunction = self._tween(easing);
+
+    // Put current values into an object
+    for (var prop in properties) {
+      properties_object[prop] = obj.style[prop];
+    }
 
     // Set transition to true
     self.data.transition = true;
@@ -420,28 +426,51 @@ function slider(slideIdentifier, custom_options){
       for (var prop in properties) {
         if (properties.hasOwnProperty(prop)) {
           var 
-            currentValue = obj.style[prop],
+            defaultValue = properties_object[prop],
             propValue = properties[prop],
             newValue = null,
             convertInt = false,
-            currentSuffix = null;
+            defaultSuffix = null,
+            negative = 0;
 
-          if (currentValue !== parseInt(currentValue)) currentSuffix = currentValue.replace(/[0-9\.]+/, '');
-          currentValue = parseInt(currentValue);
-          propValue = parseInt(propValue);
+          if (typeof defaultValue == 'string') defaultSuffix = defaultValue.replace(/^\-?[0-9\.]+(.*)$/, '$1');
+          defaultValue = parseFloat(defaultValue);
+          propValue = parseFloat(propValue);
 
-          if (currentValue > properties[prop]) {
-            newValue = currentValue-tweenFunction(timePassed, propValue, currentValue, duration);
-          } else if (currentValue != properties[prop]) {
-            newValue = tweenFunction(timePassed, currentValue, propValue, duration);
-          } else { newValue = currentValue; }
+          // Make the smallest value into 0 and remove the difference from both values, save it in "negative"
+          if (propValue < 0 || defaultValue < 0) {
+              negative = (propValue < defaultValue ? propValue : defaultValue);
+
+              defaultValue = defaultValue-negative;
+              propValue = propValue-negative;
+          } else {
+              negative = (propValue < defaultValue ? propValue : defaultValue);
+
+              defaultValue = defaultValue-negative;
+              propValue = propValue-negative;
+          }
+
+          if (defaultValue > propValue) {
+            newValue = defaultValue-tweenFunction(timePassed, propValue, defaultValue, duration);
+
+            if (newValue < propValue) newValue = propValue;
+          } else if (defaultValue != propValue) {
+            newValue = tweenFunction(timePassed, defaultValue, propValue, duration);
+
+            if (newValue > propValue) newValue = propValue;
+          } else {
+            newValue = propValue;
+          }
+
+          // Remember "negative"? Add it back
+          if (negative !== 0) newValue = newValue+negative;
 
           newValue = newValue+'';
           newValue = newValue.replace(/([0-9]+(\.[0-9]{0,3})?).*/, "$1");
           newValue = parseFloat(newValue);
 
-          if (currentSuffix) {
-            newValue = newValue+currentSuffix;
+          if (defaultSuffix) {
+            newValue = newValue+defaultSuffix;
           }
 
           obj.style[prop] = newValue;
@@ -457,9 +486,9 @@ function slider(slideIdentifier, custom_options){
             var propValue = properties[prop],
                 propSuffix = null;
 
-            if (propValue !== parseInt(propValue)) propSuffix = propValue.replace(/[0-9\.]+/, '');
+            if (typeof propValue == 'string') propSuffix = propValue.replace(/^\-?[0-9\.]+(.*)$/, '$1');
 
-            propValue = parseInt(propValue);
+            propValue = parseFloat(propValue);
 
             obj.style[prop] = (propSuffix ? propValue+propSuffix : propValue);
 
