@@ -70,6 +70,16 @@
         <div class="slide"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
       </div>
     </div>
+    <h2>pushInHorizontal</h2>
+    <p>All of the above is available as "push" as well (except for corner slide ins), an example of this effect can be seen below.</p>
+    <div id="pushHorizontalSlider" class="sliderWrapper">
+      <div class="slider">
+        <div class="slide"><img src="http://placehold.it/320x160/3ee/333&text=1"></div>
+        <div class="slide"><img src="http://placehold.it/320x160/e3e/333&text=2"></div>
+        <div class="slide"><img src="http://placehold.it/320x160/ee3/333&text=3"></div>
+        <div class="slide"><img src="http://placehold.it/320x160/33e/333&text=4"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Javascript -->
@@ -80,6 +90,7 @@
     var cornerSlider = new slider('#cornerSlider');
     var horizontalSlider = new slider('#horizontalSlider', {transition: {effect: 'slideInHorizontal'}});
     var verticalSlider = new slider('#verticalSlider', {transition: {effect: 'slideInVertical'}});
+    var pushHorizontalSlider = new slider('#pushHorizontalSlider', {transition: {effect: 'pushInHorizontal'}});
   </script>
 </body>
 </html>

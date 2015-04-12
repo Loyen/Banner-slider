@@ -15,7 +15,7 @@ function slider(slideIdentifier, custom_options){
     transition: {
       duration: 800,
       effect: 'slideInHorizontal',
-      easing: 'easeInOutExpo'
+      easing: 'easeInOut'
     },
     pause: 2000,
     autoRun: true,
@@ -37,7 +37,8 @@ function slider(slideIdentifier, custom_options){
     navigation: null,
     animation: { run: null },
     run: true,
-    transition: false
+    transition: false,
+    cssTransitions: false
   };
 
   /**
@@ -45,7 +46,7 @@ function slider(slideIdentifier, custom_options){
    * Initiate what slider container to use and setup basic data
    */
   this._construct = function(slideIdentifier, custom_options){
-    var 
+    var
       self = this,
       options_default = self.options_default,
       options = (custom_options ? self._merge(options_default, custom_options) : options_default),
@@ -53,12 +54,21 @@ function slider(slideIdentifier, custom_options){
       sliderWrapper = document.body.querySelector(slideIdentifier),
       slider = sliderWrapper.querySelector('.'+options.classes.slider),
       slides = slider.querySelectorAll('.'+options.classes.slide);
-    
+
+    // Check for transition support
+    var cssProperties = document.body.style;
+    if (
+    	'WebkitTransition' in cssProperties
+    	|| 'MozTransition' in cssProperties
+    	|| 'OTransition' in cssProperties
+    	|| 'transition' in cssProperties
+    ) cssTransitions = true;
+
     // If there's more than one slide
     if (slides.length > 1) {
       // If directions is set to be shown, add them
       if (options.direction) {
-        var 
+        var
           direction = document.createElement('div'),
           directionPrev = document.createElement('div'),
           directionNext = document.createElement('div');
@@ -102,7 +112,7 @@ function slider(slideIdentifier, custom_options){
         navigation.setAttribute('class', options.classes.navigation);
 
         for (var i=0;i<slides.length;i++) {
-          var 
+          var
             navItem = document.createElement('div'),
             slide = slides[i];
 
@@ -119,7 +129,7 @@ function slider(slideIdentifier, custom_options){
             var navItem = e.target,
                 newSlideID = navItem.getAttribute('slide');
 
-            self.newSlide(newSlideID); 
+            self.newSlide(newSlideID);
           });
 
           navigation.appendChild(navItem);
@@ -155,7 +165,7 @@ function slider(slideIdentifier, custom_options){
    * Initiate slider
    */
   this._initiate = function(){
-    var 
+    var
       self = this,
       options = self.options,
       data = self.data,
@@ -181,14 +191,14 @@ function slider(slideIdentifier, custom_options){
    * Start slider
    */
   this.start = function(){
-    var 
+    var
       self = this,
       options = self.options,
       data = self.data,
       slides = data.slides;
 
     data.animation.run = setInterval(function(){
-      var 
+      var
         currentSlideID = data.currentSlide,
         slideID = (options.random ? self.randomSlide() : currentSlideID+1);
 
@@ -202,7 +212,7 @@ function slider(slideIdentifier, custom_options){
    * Stop slider
    */
   this.stop = function(){
-    var 
+    var
       self = this,
       options = self.options,
       data = self.data;
@@ -214,7 +224,7 @@ function slider(slideIdentifier, custom_options){
    * Transition to next slide with/without animation
    */
   this.newSlide = function(slideID, noAnimation){
-    var 
+    var
       self = this,
       options = self.options,
       data = self.data,
@@ -234,7 +244,7 @@ function slider(slideIdentifier, custom_options){
     } else if (slideID == currentSlideID) {
       console.log('Slide is already there.');
     } else if (data.transition) {
-      console.log('Slider is currently running a transition. You will have to wait.'); 
+      console.log('Slider is currently running a transition. You will have to wait.');
     } else {
       currentSlideID = slideID;
       currentSlide = slides[currentSlideID];
@@ -251,13 +261,20 @@ function slider(slideIdentifier, custom_options){
       if (currentSlide.getAttribute('slider-transition')) transition = currentSlide.getAttribute('slider-transition');
       if (currentSlide.getAttribute('slider-easing')) easing = currentSlide.getAttribute('slider-easing');
 
-      if (lastSlide) lastSlide.style.zIndex = 0;
+      if (lastSlide)
+      {
+        lastSlide.style.zIndex = 0;
+        lastSlide.style.left = 'auto';
+        lastSlide.style.top = 'auto';
+        lastSlide.style.bottom = 'auto';
+        lastSlide.style.right = 'auto';
+      }
 
       if (options.navigation) {
         var
-          navCurrentSlide = data.navigation[currentSlideID], 
+          navCurrentSlide = data.navigation[currentSlideID],
           navCurrentSlideClass = navCurrentSlide.getAttribute('class'),
-          navLastSlide, 
+          navLastSlide,
           navLastSlideClass;
 
         if (lastSlide) {
@@ -271,7 +288,7 @@ function slider(slideIdentifier, custom_options){
 
       // If noAnimation is not set, run transition for current slide
       if (!noAnimation) {
-        if (self.data.run) self.stop(); 
+        if (self.data.run) self.stop();
 
         var runTransition = self.transition(transition, easing);
 
@@ -293,7 +310,7 @@ function slider(slideIdentifier, custom_options){
    * Get random slide ID
    */
   this.randomSlide = function(){
-    var 
+    var
       self = this,
       data = self.data,
       slides = data.slides,
@@ -303,7 +320,7 @@ function slider(slideIdentifier, custom_options){
       {
         slideID = Math.floor(Math.random() * ((slides.length-1) - 0 + 1)) + 0;
       }
-      
+
       return slideID;
   };
 
@@ -311,7 +328,7 @@ function slider(slideIdentifier, custom_options){
   };
 
   this.transition = function(transition, easing){
-    var 
+    var
       self = this,
       options = self.options,
       data = self.data,
@@ -352,6 +369,7 @@ function slider(slideIdentifier, custom_options){
 
         self.animate(currentSlide, {right: 0});
       },
+
       slideInTopLeft: function(){
         currentSlide.style.bottom = sliderHeight+'px';
         currentSlide.style.right = sliderWidth+'px';
@@ -375,10 +393,40 @@ function slider(slideIdentifier, custom_options){
         currentSlide.style.left = sliderWidth+'px';
 
         self.animate(currentSlide, {top: 0, left: 0});
+      },
+
+      pushInTop: function(){
+        currentSlide.style.bottom = sliderHeight+'px';
+        lastSlide.style.top = 0;
+
+        self.animate(currentSlide, {bottom: 0});
+        self.animate(lastSlide, {top: sliderHeight+'px'});
+      },
+      pushInRight: function(){
+        currentSlide.style.left = sliderWidth+'px';
+        lastSlide.style.right = 0;
+
+        self.animate(currentSlide, {left: 0});
+        self.animate(lastSlide, {right: sliderWidth+'px'});
+      },
+      pushInBottom: function(){
+        currentSlide.style.top = sliderHeight+'px';
+        lastSlide.style.bottom = 0;
+
+        self.animate(currentSlide, {top: 0});
+        self.animate(lastSlide, {bottom: sliderHeight+'px'});
+      },
+      pushInLeft: function(){
+        currentSlide.style.right = sliderWidth+'px';
+        lastSlide.style.left = 0;
+
+        self.animate(currentSlide, {right: 0});
+        self.animate(lastSlide, {left: sliderWidth+'px'});
       }
     };
 
     // If special transition, set transition to correct one
+    // SlideIn
     if (transition == 'slideInVertical') {
       transition = (currentSlideID > lastSlideID ? 'slideInTop' : 'slideInBottom');
     } else if (transition == 'slideInVerticalReversed') {
@@ -387,6 +435,15 @@ function slider(slideIdentifier, custom_options){
       transition = (currentSlideID > lastSlideID ? 'slideInRight' : 'slideInLeft');
     } else if (transition == 'slideInHorizontalReversed') {
       transition = (currentSlideID < lastSlideID ? 'slideInRight' : 'slideInLeft');
+    // PushIn
+    } else if (transition == 'pushInVertical') {
+      transition = (currentSlideID > lastSlideID ? 'pushInTop' : 'pushInBottom');
+    } else if (transition == 'pushInVerticalReversed') {
+      transition = (currentSlideID < lastSlideID ? 'pushInTop' : 'pushInBottom');
+    } else if (transition == 'pushInHorizontal') {
+      transition = (currentSlideID > lastSlideID ? 'pushInRight' : 'pushInLeft');
+    } else if (transition == 'pushInHorizontalReversed') {
+      transition = (currentSlideID < lastSlideID ? 'pushInRight' : 'pushInLeft');
     }
 
     return transitions[transition];
@@ -396,7 +453,7 @@ function slider(slideIdentifier, custom_options){
    * Animate object from current prop value to the one specified in properties
    */
   this.animate = function(obj, properties, duration, easing){
-    var 
+    var
       self = this,
       options = self.options,
       data = self.data,
@@ -425,7 +482,7 @@ function slider(slideIdentifier, custom_options){
       // Run property update per property
       for (var prop in properties) {
         if (properties.hasOwnProperty(prop)) {
-          var 
+          var
             defaultValue = properties_object[prop],
             propValue = properties[prop],
             newValue = null,
@@ -504,7 +561,7 @@ function slider(slideIdentifier, custom_options){
    * Merge multiple objects into one
    */
   this._merge = function(){
-    var 
+    var
       self = this,
       arraynew = {};
 
@@ -531,121 +588,21 @@ function slider(slideIdentifier, custom_options){
       linear: function (t, b, c, d) {
         return c*t/d + b;
       },
-      // quadratic easing in - accelerating from zero velocity
-      easeInQuad: function (t, b, c, d) {
-        t /= d;
-        return c*t*t + b;
-      },
-      // quadratic easing out - decelerating to zero velocity
-      easeOutQuad: function (t, b, c, d) {
-        t /= d;
-        return -c * t*(t-2) + b;
-      },
-      // quadratic easing in/out - acceleration until halfway, then deceleration
-      easeInOutQuad: function (t, b, c, d) {
-        t /= d/2;
-        if (t < 1) return c/2*t*t + b;
-        t--;
-        return -c/2 * (t*(t-2) - 1) + b;
-      },
-      // cubic easing in - accelerating from zero velocity
-      easeInCubic: function (t, b, c, d) {
-        t /= d;
-        return c*t*t*t + b;
-      },
-      // cubic easing out - decelerating to zero velocity
-      easeOutCubic: function (t, b, c, d) {
-        t /= d;
-        t--;
-        return c*(t*t*t + 1) + b;
-      },
-      // cubic easing in/out - acceleration until halfway, then deceleration
-      easeInOutCubic: function (t, b, c, d) {
-        t /= d/2;
-        if (t < 1) return c/2*t*t*t + b;
-        t -= 2;
-        return c/2*(t*t*t + 2) + b;
-      },
-      // quartic easing in - accelerating from zero velocity
-      easeInQuart: function (t, b, c, d) {
-        t /= d;
-        return c*t*t*t*t + b;
-      },
-      // quartic easing out - decelerating to zero velocity
-      easeOutQuart: function (t, b, c, d) {
-        t /= d;
-        t--;
-        return -c * (t*t*t*t - 1) + b;
-      },
-      // quartic easing in/out - acceleration until halfway, then deceleration
-      easeInOutQuart: function (t, b, c, d) {
-        t /= d/2;
-        if (t < 1) return c/2*t*t*t*t + b;
-        t -= 2;
-        return -c/2 * (t*t*t*t - 2) + b;
-      },
-      // quintic easing in - accelerating from zero velocity
-      easeInQuint: function (t, b, c, d) {
-        t /= d;
-        return c*t*t*t*t*t + b;
-      },
-      // quintic easing out - decelerating to zero velocity
-      easeOutQuint: function (t, b, c, d) {
-        t /= d;
-        t--;
-        return c*(t*t*t*t*t + 1) + b;
-      },
-      // quintic easing in/out - acceleration until halfway, then deceleration
-      easeInOutQuint: function (t, b, c, d) {
-        t /= d/2;
-        if (t < 1) return c/2*t*t*t*t*t + b;
-        t -= 2;
-        return c/2*(t*t*t*t*t + 2) + b;
-      },
-      // sinusoidal easing in - accelerating from zero velocity
-      easeInSine: function (t, b, c, d) {
-        return -c * Math.cos(t/d * (PI/2)) + c + b;
-      },
-      // sinusoidal easing out - decelerating to zero velocity
-      easeOutSine: function (t, b, c, d) {
-        return c * Math.sin(t/d * (PI/2)) + b;
-      },
-      // sinusoidal easing in/out - accelerating until halfway, then decelerating
-      easeInOutSine: function (t, b, c, d) {
-        return -c/2 * (Math.cos(PI*t/d) - 1) + b;
-      },
+
       // exponential easing in - accelerating from zero velocity
-      easeInExpo: function (t, b, c, d) {
+      easeIn: function (t, b, c, d) {
         return c * Math.pow( 2, 10 * (t/d - 1) ) + b;
       },
       // exponential easing out - decelerating to zero velocity
-      easeOutExpo: function (t, b, c, d) {
+      easeOut: function (t, b, c, d) {
         return c * ( -Math.pow( 2, -10 * t/d ) + 1 ) + b;
       },
       // exponential easing in/out - accelerating until halfway, then decelerating
-      easeInOutExpo: function (t, b, c, d) {
+      easeInOut: function (t, b, c, d) {
         t /= d/2;
         if (t < 1) return c/2 * Math.pow( 2, 10 * (t - 1) ) + b;
         t--;
         return c/2 * ( -Math.pow( 2, -10 * t) + 2 ) + b;
-      },
-      // circular easing in - accelerating from zero velocity
-      easeInCirc: function (t, b, c, d) {
-        t /= d;
-        return -c * (Math.sqrt(1 - t*t) - 1) + b;
-      },
-      // circular easing out - decelerating to zero velocity
-      easeOutCirc: function (t, b, c, d) {
-        t /= d;
-        t--;
-        return c * Math.sqrt(1 - t*t) + b;
-      },
-      // circular easing in/out - acceleration until halfway, then deceleration
-      easeInOutCirc: function (t, b, c, d) {
-        t /= d/2;
-        if (t < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
-        t -= 2;
-        return c/2 * (Math.sqrt(1 - t*t) + 1) + b;
       }
     };
 
